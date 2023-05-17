@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="pers.lige.sms.mapper.GradeMapper">
+    <!--    分页查询,根据年级名称查询指定或者所有年级列表信息-->
+    <select id="selectList" parameterType="grade" resultType="grade">
+        select
+        id,email,telephone,name,introducation,manager
+        from
+        tb_grade
+        <where>
+            <if test="name!=null and name!=''">
+                and name like concat('%',#{name},'%')
+            </if>
+        </where>
+    </select>
+    <!--校验年级名称是否存在-->
+    <select id="findByName" parameterType="String" resultType="grade">
+        select
+            id,manager,introducation,name,telephone,email
+        from
+            tb_grade
+        where
+            name = #{name}
+    </select>
+    <!-- 年级信息添加-->
+    <insert id="insert" parameterType="grade">
+        insert into
+            tb_grade(name, manager, email, telephone, introducation)
+        values (#{name},#{manager},#{email},#{telephone},#{introducation})
+    </insert>
+    <!--年级信息修改-->
+    <update id="update" parameterType="grade">
+        update tb_grade
+        set name = #{name},manager = #{manager},email = #{email},telephone = #{telephone},introducation = #{introducation}
+        where
+            id = #{id}
+    </update>
+    <!--删除年级信息-->
+    <delete id="deleteGradeById">
+        delete from tb_grade where  id in
+        <foreach collection="array" item="ids" open="(" separator="," close=")">
+            #{ids}
+        </foreach>
+
+    </delete>
+    <!--    查询所有年级信息(用于在班级管理页面中获取年级信息)-->
+    <select id="selectAll" resultType="Grade">
+        select
+            id,name,manager,telephone,introducation,email
+        from
+            tb_grade
+
+    </select>
+</mapper>

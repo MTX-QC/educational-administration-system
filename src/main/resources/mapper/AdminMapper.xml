@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="pers.lige.sms.mapper.AdminMapper">
+  <!--验证登录信息是否正确-->
+   <select id="login" parameterType="LoginForm" resultType="pers.lige.sms.entity.Admin">
+       select
+       id,
+       name,
+       gender,
+       password,
+       email,
+       telephone,
+       address,
+       portrait_path
+       from
+       tb_admin
+       where
+       name=#{username}
+       and
+       password = #{password}
+   </select>
+
+
+    <!--  根据管理员姓名查询指定或所有数据列表,/*name 为admin重属性名(在Controller层中已将查询的姓名封装到admin中name属性中)*/-->
+    <select id="selectList" parameterType="Admin" resultType="Admin">
+        select
+        id,password,name,address,telephone,email,portrait_path,gender
+        from
+        tb_admin
+        <where>
+            <if test="name!=null and name!=''">
+                and name like concat('%',#{name},'%')
+            </if>
+        </where>
+    </select>
+    <!--根据用户名查询管理员信息-->
+    <select id="findByName" parameterType="String" resultType="Admin">
+        select
+            id,password,name,address,telephone,email,portrait_path,gender
+        from
+            tb_admin
+        where
+            name = #{name}
+    </select>
+    <!--添加管理员信息-->
+    <insert id="insert" parameterType="admin">
+        insert into  tb_admin(name, gender, password, email, telephone, address, portrait_path)
+        values(#{name},#{gender},#{password},#{email},#{telephone},#{address},#{portrait_path})
+    </insert>
+    <!--修改管理员信息-->
+    <update id="editAdmin" parameterType="admin">
+        update tb_admin
+        <set>
+            <if test="name!=null and name!=''">name=#{name},</if>
+            <if test="gender!=null and gender!=''">gender=#{gender},</if>
+            <if test="email!=null and email!=''">email=#{email},</if>
+            <if test="telephone!=null and telephone!=''">telephone=#{telephone},</if>
+            <if test="address!=null and address!=''">address=#{address},</if>
+            <if test="portrait_path!=null and portrait_path!=''">portrait_path=#{portrait_path}</if>
+        </set>
+        where
+        id = #{id}
+    </update>
+    <!--删除指定管理员信息-->
+    <delete id="deleteAdmin">
+        delete from tb_admin where id in
+        <foreach collection="array" item="ids" open="(" separator="," close=")">
+            #{ids}
+        </foreach>
+    </delete>
+    <!-- 管理员修改密码-->
+    <update id="updatePassword" parameterType="Admin">
+
+        update tb_admin
+        set
+            password  = #{password}
+        where
+            id = #{id}
+    </update>
+</mapper>
